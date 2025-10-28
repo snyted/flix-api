@@ -1,5 +1,8 @@
 import bcrypt from "bcrypt";
 import { users } from "../data/users.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function registerController(req, res) {
   const { user, password } = req.body;
@@ -34,5 +37,9 @@ export async function loginController(req, res) {
     return res.status(401).send({ message: "Usuário ou senha incorretos" });
   }
 
-  res.status(200).send({ message: "Login efetuado!" });
+  const token = jwt.sign({ id: user.id }, "minhaChaveTemporaria", {
+    expiresIn: "1h",
+  });
+
+  res.status(200).json({ message: "Login efetuado!", token });
 }

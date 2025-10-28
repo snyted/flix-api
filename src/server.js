@@ -1,6 +1,6 @@
 import express from "express";
 import moviesRoutes from "./routes/moviesRoutes.js";
-import authRoutes from './routes/authRoutes.js'
+import userRoutes from './routes/userRoutes.js'
 
 const app = express();
 const PORT = 3333;
@@ -11,7 +11,7 @@ app.use(logGlobal);
 
 app.use("/movies", moviesRoutes);
 
-app.use('/auth', authRoutes)
+app.use('/user', userRoutes)
 
 app.listen(PORT, () => console.log("servidor rodando na porta " + PORT));
 
