@@ -1,5 +1,3 @@
-import { seeds } from "../data/seeds.js";
-
 export function findMovieById(id) {
   return seeds.find((movie) => movie.id === id);
 }

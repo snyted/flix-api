@@ -1,12 +1,11 @@
-import { pool } from '../config/db.js';
+import pool from '../config/db.js';
 
 async function createTables() {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL,
+        name VARCHAR(100) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL
       );
     `);
@@ -40,5 +39,4 @@ async function createTables() {
   }
 }
 
-// Executa a função
 createTables();

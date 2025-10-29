@@ -1,25 +1,23 @@
 import bcrypt from "bcrypt";
-import { users } from "../data/users.js";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+import pool from "../config/db.js";
 
 export async function registerController(req, res) {
-  const { user, password } = req.body;
+  try {
+    const { user, password } = req.body;
 
-  if (users.find((u) => u.user === user)) {
-    return res.status(400).send({ message: `Usuário ${user} já existe.` });
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(
+      "INSERT INTO users (name, password) VALUES ($1, $2)",
+      [user, hashedPassword]
+    );
+
+    res.status(201).send({ user, message: "Cadastro efetuado com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao cadastrar usuário:", err);
+    res.status(500).send({ message: "Erro no servidor" });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  users.push({ user, password: hashedPassword });
-
-  console.log(
-    `Usuário cadastrado: ${user}, usuários: ${JSON.stringify(users)}`
-  );
-
-  res.status(201).send({ user, message: "Cadastro efetuado com sucesso!" });
 }
 
 export async function loginController(req, res) {
