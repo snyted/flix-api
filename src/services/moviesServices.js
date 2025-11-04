@@ -1,7 +1,25 @@
 import tmdbApi from "../config/tmdb.js";
+import { ApiError } from "../utils/ApiError.js";
 
-export function findMovieById(id) {
-  return seeds.find((movie) => movie.id === id);
+export async function findMovieById(id) {
+  console.log(id);
+  try {
+    const responseMovie = await tmdbApi.get(`/movie/${id}`);
+    return responseMovie.data;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      try {
+        const responseTv = await tmdbApi.get(`/tv/${id}`);
+        return responseTv.data;
+      } catch (error) {
+        throw new ApiError(404, "Filme ou série não encontrada");
+      }
+    }
+    throw new ApiError(
+      error.response?.status || 500,
+      "Erro ao buscar filme ou série"
+    );
+  }
 }
 
 export async function getTrendingService() {

@@ -22,11 +22,12 @@ export async function getTrendingController(req, res) {
 }
 
 export async function getMovieByNameController(req, res) {
+  const { q } = req.query;
+  if (!q) {
+    return res.status(400).json({ error: "Parâmetro 'q' é obrigatório" });
+  }
+
   try {
-    const { q } = req.query;
-    if (!q) {
-      return res.status(400).json({ error: "Parâmetro 'q' é obrigatório" });
-    }
     const movies = await getMovieByNameService(q);
     res.status(200).json(movies);
   } catch (error) {
@@ -42,10 +43,10 @@ export function getAllFavoritesMoviesController(req, res) {
 }
 
 // GET by ID
-export function getMovieByIdController(req, res) {
-  const id = req.params.id;
+export async function getMovieByIdController(req, res) {
+  const { id } = req.params;
   try {
-    const movie = findMovieById(id);
+    const movie = await findMovieById(id);
     validateMovie(movie);
     res.json(movie);
   } catch (err) {
