@@ -1,8 +1,4 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-
-dotenv.config();
-
 export function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -14,6 +10,7 @@ export function authenticate(req, res, next) {
   console.log(`Token: ${token}`);
   try {
     const decoded = jwt.verify(token, "minhaChaveTemporaria");
+    console.log(decoded);
     req.user = decoded;
     next();
   } catch (err) {

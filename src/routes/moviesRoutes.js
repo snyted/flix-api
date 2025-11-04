@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import {
-  getAllMoviesController,
+  getTrendingController,
   getMovieByIdController,
   getAllFavoritesMoviesController,
   toggleFavoriteMovieController,
@@ -11,7 +11,7 @@ import { authenticate } from "../middlewares/authenticate.js";
 
 const router = Router();
 
-router.get("/", getAllMoviesController);
+router.get("/", getTrendingController);
 
 router.get("/favorites", authenticate, getAllFavoritesMoviesController);
 

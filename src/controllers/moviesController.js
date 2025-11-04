@@ -1,17 +1,24 @@
-import { 
-  findMovieById, 
-  getAllMovies, 
-  allFavorites, 
-  toggleFavorite, 
-  rateMovie 
+import {
+  findMovieById,
+  getTrendingService,
+  allFavorites,
+  toggleFavorite,
+  rateMovie,
 } from "../services/moviesServices.js";
 
 import { validateMovie, validateRating } from "../utils/validators.js";
 
 // GETs
-export function getAllMoviesController(req, res) {
-  const movies = getAllMovies();
-  res.json(movies);
+export async function getTrendingController(req, res) {
+  try {
+    const movies = await getTrendingService();
+    console.log(movies)
+    res.json(movies);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Erro ao buscar filmes", error: err.message });
+  }
 }
 
 export function getAllFavoritesMoviesController(req, res) {

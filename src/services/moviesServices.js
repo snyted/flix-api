@@ -1,9 +1,16 @@
+import tmdbApi from "../config/tmdb.js";
+
 export function findMovieById(id) {
   return seeds.find((movie) => movie.id === id);
 }
 
-export function getAllMovies() {
-  return seeds;
+export async function getTrendingService() {
+  try {
+    const response = await tmdbApi.get("/trending/all/week");
+    return response.data.results;
+  } catch (err) {
+    console.error("Erro ao buscar dados do TMDB:", err.message);
+  }
 }
 
 export function allFavorites() {

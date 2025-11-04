@@ -30,8 +30,6 @@ async function createTables() {
         UNIQUE(user_id, movie_id)
       );
     `);
-
-    console.log('Todas as tabelas criadas com sucesso!');
   } catch (err) {
     console.error('Erro ao criar tabelas:', err.message);
   } finally {
