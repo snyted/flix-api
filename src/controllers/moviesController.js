@@ -4,6 +4,7 @@ import {
   allFavorites,
   toggleFavorite,
   rateMovie,
+  getMovieByNameService,
 } from "../services/moviesServices.js";
 
 import { validateMovie, validateRating } from "../utils/validators.js";
@@ -12,9 +13,23 @@ import { validateMovie, validateRating } from "../utils/validators.js";
 export async function getTrendingController(req, res) {
   try {
     const movies = await getTrendingService();
-    console.log(movies)
     res.json(movies);
   } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Erro ao buscar filmes", error: err.message });
+  }
+}
+
+export async function getMovieByNameController(req, res) {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.status(400).json({ error: "Parâmetro 'q' é obrigatório" });
+    }
+    const movies = await getMovieByNameService(q);
+    res.status(200).json(movies);
+  } catch (error) {
     res
       .status(500)
       .json({ message: "Erro ao buscar filmes", error: err.message });

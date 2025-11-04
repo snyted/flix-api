@@ -6,12 +6,15 @@ import {
   getAllFavoritesMoviesController,
   toggleFavoriteMovieController,
   rateMovieController,
+  getMovieByNameController
 } from "../controllers/moviesController.js";
 import { authenticate } from "../middlewares/authenticate.js";
 
 const router = Router();
 
 router.get("/", getTrendingController);
+
+router.get('/search', getMovieByNameController)
 
 router.get("/favorites", authenticate, getAllFavoritesMoviesController);
 
