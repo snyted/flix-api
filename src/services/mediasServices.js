@@ -49,7 +49,7 @@ export async function getMediaFromTmdb(name) {
   }
 }
 
-export function allFavorites() {
+export function getAllFavorites() {
   return seeds.filter((movie) => movie.favorite === true);
 }
 

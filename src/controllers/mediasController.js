@@ -1,6 +1,6 @@
 import {
   getMediaById,
-  allFavorites,
+  getAllFavorites,
   toggleFavorite,
   rateMedia,
   getMediaFromTmdb,
@@ -41,8 +41,8 @@ export async function searchingMedia(req, res) {
   }
 }
 
-export function getAllFavoritesMediasController(req, res) {
-  const favorites = allFavorites();
+export function showFavorites(req, res) {
+  const favorites = getAllFavorites();
   res.json(favorites);
 }
 
