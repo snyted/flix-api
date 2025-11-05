@@ -1,20 +1,11 @@
 import tmdbApi from "../config/tmdb.js";
 import { ApiError } from "../utils/ApiError.js";
 
-export async function findMediaById(id) {
-  console.log(id);
+export async function getMediaById(type, id) {
   try {
-    const responseMovie = await tmdbApi.get(`/movie/${id}`);
-    return responseMovie.data;
+    const response = await tmdbApi.get(`/${type}/${id}`);
+    return response.data;
   } catch (error) {
-    if (error.response && error.response.status === 404) {
-      try {
-        const responseTv = await tmdbApi.get(`/tv/${id}`);
-        return responseTv.data;
-      } catch (error) {
-        throw new ApiError(404, "Filme ou série não encontrados");
-      }
-    }
     throw new ApiError(
       error.response?.status || 500,
       "Erro ao buscar filme ou série"
@@ -25,13 +16,19 @@ export async function findMediaById(id) {
 export async function trendingFromTmdb(type) {
   try {
     const response = await tmdbApi.get(`/trending/${type}/week`);
-    return response.data.results;
+    return response.data.results.map((movie) => ({
+      id: movie.id,
+      title: movie.title || movie.name,
+      overview: movie.overview,
+      type: movie.media_type,
+      release: movie.release_date,
+    }));
   } catch (err) {
     console.error("Erro ao buscar dados do TMDB:", err.message);
   }
 }
 
-export async function getMediaByNameService(name) {
+export async function getMediaFromTmdb(name) {
   try {
     const response = await tmdbApi.get("/search/multi", {
       params: { query: name },

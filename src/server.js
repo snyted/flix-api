@@ -4,7 +4,7 @@ import express from "express";
 import moviesRoutes from "./routes/moviesRoutes.js";
 import seriesRoutes from "./routes/seriesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import search from './routes/search.js'
+import search from "./routes/search.js";
 
 const app = express();
 const PORT = 3000;
@@ -14,8 +14,8 @@ app.use(express.json());
 app.use(logGlobal);
 
 app.use("/movies", moviesRoutes);
+app.use("/search", search);
 app.use("/series", seriesRoutes);
-app.use('/search', search.js)
 
 app.use("/user", userRoutes);
 

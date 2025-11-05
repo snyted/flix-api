@@ -1,17 +1,19 @@
 import {
-  findMediaById,
-  getTrendingService,
+  getMediaById,
   allFavorites,
   toggleFavorite,
   rateMedia,
-  getMediaByNameService,
+  getMediaFromTmdb,
+  trendingFromTmdb,
 } from "../services/mediasServices.js";
 
 import { validateMovie, validateRating } from "../utils/validators.js";
 
-// GETs
+// ------ GETS -------
+
 export async function getTrending(req, res) {
-  const { type } = req.params;
+  const { type } = req;
+  console.log(type);
   try {
     const medias = await trendingFromTmdb(type);
     res.json(medias);
@@ -22,14 +24,15 @@ export async function getTrending(req, res) {
   }
 }
 
-export async function getMediaByNameController(req, res) {
+// Get by Query Params
+export async function searchingMedia(req, res) {
   const { q } = req.query;
   if (!q) {
     return res.status(400).json({ error: "Parâmetro 'q' é obrigatório" });
   }
 
   try {
-    const movies = await getMediaByNameService(q);
+    const movies = await getMediaFromTmdb(q);
     res.status(200).json(movies);
   } catch (error) {
     res
@@ -44,10 +47,12 @@ export function getAllFavoritesMediasController(req, res) {
 }
 
 // GET by ID
-export async function getMediaByIdController(req, res) {
+export async function findMediaById(req, res) {
   const { id } = req.params;
+  const { type } = req;
   try {
-    const media = await findMediaById(id);
+    const media = await getMediaById(type, id);
+    
     validateMovie(media);
     res.json(media);
   } catch (err) {
