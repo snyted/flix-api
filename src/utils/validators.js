@@ -1,5 +1,5 @@
-export function validateMovie(movie) {
-    if (!movie) throw new Error("Filme/Série não encontrado!");
+export function validateMovie(media) {
+    if (!media) throw new Error("Filme/Série não encontrados!");
   }
   
   export function validateRating(rating) {

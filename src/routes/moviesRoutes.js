@@ -1,27 +1,22 @@
 import { Router } from "express";
-
-import {
-  getTrendingController,
-  getMovieByIdController,
-  getAllFavoritesMoviesController,
-  toggleFavoriteMovieController,
-  rateMovieController,
-  getMovieByNameController
-} from "../controllers/moviesController.js";
 import { authenticate } from "../middlewares/authenticate.js";
+import { typingRoutes } from "../middlewares/typingRoutes.js";
+import { getTrending } from "../controllers/mediasController.js";
 
 const router = Router();
 
-router.get("/", getTrendingController);
+router.use(typingRoutes("movie"));
 
-router.get('/search', getMovieByNameController)
+router.get("/", getTrending);
 
-router.get("/favorites", authenticate, getAllFavoritesMoviesController);
+router.get("/search", getMediaByNameController);
 
-router.get("/:id", getMovieByIdController);
+router.get("/favorites", authenticate, getAllFavoritesMediasController);
 
-router.patch("/:id/favorite", authenticate, toggleFavoriteMovieController);
+router.get("/:id", getMediaByIdController);
 
-router.patch("/:id/rate", authenticate, rateMovieController);
+router.patch("/:id/favorite", authenticate, toggleFavoriteMediaController);
+
+router.patch("/:id/rate", authenticate, rateMediaController);
 
 export default router;

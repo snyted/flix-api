@@ -1,7 +1,7 @@
 import tmdbApi from "../config/tmdb.js";
 import { ApiError } from "../utils/ApiError.js";
 
-export async function findMovieById(id) {
+export async function findMediaById(id) {
   console.log(id);
   try {
     const responseMovie = await tmdbApi.get(`/movie/${id}`);
@@ -12,7 +12,7 @@ export async function findMovieById(id) {
         const responseTv = await tmdbApi.get(`/tv/${id}`);
         return responseTv.data;
       } catch (error) {
-        throw new ApiError(404, "Filme ou série não encontrada");
+        throw new ApiError(404, "Filme ou série não encontrados");
       }
     }
     throw new ApiError(
@@ -22,18 +22,17 @@ export async function findMovieById(id) {
   }
 }
 
-export async function getTrendingService() {
+export async function trendingFromTmdb(type) {
   try {
-    const response = await tmdbApi.get("/trending/all/week");
+    const response = await tmdbApi.get(`/trending/${type}/week`);
     return response.data.results;
   } catch (err) {
     console.error("Erro ao buscar dados do TMDB:", err.message);
   }
 }
 
-export async function getMovieByNameService(name) {
+export async function getMediaByNameService(name) {
   try {
-    console.log("Service movie name", name);
     const response = await tmdbApi.get("/search/multi", {
       params: { query: name },
     });
@@ -62,7 +61,7 @@ export function toggleFavorite(movie) {
   return movie;
 }
 
-export function rateMovie(movie, rating) {
+export function rateMedia(movie, rating) {
   movie.rating = rating;
   return movie;
 }
