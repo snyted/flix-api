@@ -4,10 +4,8 @@ export function authenticate(req, res, next) {
   if (!authHeader) {
     return res.status(401).send({ message: "Token não fornecido" });
   }
-
-  console.log(`Auth Header: ${authHeader}`);
+  
   const token = authHeader.split(" ")[1];
-  console.log(`Token: ${token}`);
   try {
     const decoded = jwt.verify(token, "minhaChaveTemporaria");
     console.log(decoded);

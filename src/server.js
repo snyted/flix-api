@@ -7,6 +7,7 @@ import seriesRoutes from "./routes/seriesRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import search from "./routes/search.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 const PORT = 3000;
@@ -21,5 +22,7 @@ app.use("/search", search);
 app.use("/favorites", favoriteRoutes);
 
 app.use("/user", userRoutes);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log("servidor rodando na porta " + PORT));

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate.js";
 import { typingRoutes } from "../middlewares/typingRoutes.js";
-import { getTrending, findMediaById } from "../controllers/mediasController.js";
+import { getTrending, findMediaById, toggleFavoriteController } from "../controllers/mediasController.js";
 
 const router = Router();
 
@@ -9,10 +9,8 @@ router.use(typingRoutes("movie"));
 
 router.get("/", getTrending);
 router.get("/:id", findMediaById);
-
-// router.get("/favorites", authenticate);
-
-// router.patch("/:id/favorite", authenticate);
+router.put('/:id/favorite', authenticate, toggleFavoriteController)
+//
 
 // router.patch("/:id/rate", authenticate);
 

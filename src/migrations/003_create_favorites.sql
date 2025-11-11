@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS favorites (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  media_id INT NOT NULL REFERENCES media(id) ON DELETE CASCADE,
+  UNIQUE(user_id, media_id)
+);

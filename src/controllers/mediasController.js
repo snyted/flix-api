@@ -6,16 +6,16 @@ import {
   getMediaFromTmdb,
   trendingFromTmdb,
 } from "../services/mediasServices.js";
+import { ApiError } from "../utils/ApiError.js";
 
-import { validateMovie, validateRating } from "../utils/validators.js";
+import { validateMedia, validateRating } from "../utils/validators.js";
 
 // ------ GETS -------
 
 export async function getTrending(req, res) {
-  const { type } = req;
-  console.log(type);
+  const { mediaType } = req;
   try {
-    const medias = await trendingFromTmdb(type);
+    const medias = await trendingFromTmdb(mediaType);
     res.json(medias);
   } catch (err) {
     res
@@ -43,44 +43,55 @@ export async function searchingMedia(req, res) {
 
 export function showFavorites(req, res) {
   const favorites = getAllFavorites();
+  // ARRUMAR ESSA FUNC DPS
   res.json(favorites);
 }
 
 // GET by ID
 export async function findMediaById(req, res) {
   const { id } = req.params;
-  const { type } = req;
+  const { mediaType } = req;
   try {
-    const media = await getMediaById(type, id);
-    
-    validateMovie(media);
+    const media = await getMediaById(mediaType, id);
+
+    validateMedia(media);
     res.json(media);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
 }
 
-// PATCH: toggle favorite
-export function toggleFavoriteMediaController(req, res) {
+// ------- PUT's -------
+// Put Toggle Favorite
+export async function toggleFavoriteController(req, res, next) {
   const { id } = req.params;
+  const { mediaType } = req;
+
+  if (!id || !mediaType) {
+    return next(new ApiError(400, "ID ou tipo não informados."));
+  }
+
   try {
-    const movie = findMovieById(id);
-    validateMovie(movie);
-    const updatedMovie = toggleFavorite(movie);
-    res.json(updatedMovie);
+    const media = await getMediaById(mediaType, id);
+
+    validateMedia(media);
+
+    const result = await toggleFavorite(req.user.id, media);
+
+    return res.status(201).json(result);
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    next(err);
   }
 }
 
-// PATCH: rate movie
+// PUT  modify rate
 export function rateMediaController(req, res) {
   const { id } = req.params;
   const { rating } = req.body;
 
   try {
-    const movie = findMediaById(id);
-    validateMovie(movie);
+    const media = findMediaById(id);
+    validateMedia(media);
     validateRating(rating);
     const updatedMovie = rateMedia(movie, rating);
     res.json(updatedMovie);

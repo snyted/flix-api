@@ -3,7 +3,7 @@ export function typingRoutes(type) {
     if (type !== "movie" && type !== "tv") {
       throw new Error(`Tipo inválido: ${type}. Use 'movie ou 'tv'`);
     }
-    req.type = type;
+    req.mediaType = type;
     next();
   };
 }

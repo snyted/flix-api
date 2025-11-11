@@ -39,7 +39,7 @@ export async function loginController(req, res) {
       expiresIn: "1h",
     });
 
-    res.status(200).json({ message: "Login efetuado!", token });
+    res.status(200).json({ message: "Login efetuado!" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro no servidor" });

@@ -1,5 +1,7 @@
-export function validateMovie(media) {
-  if (!media) throw new Error("Filme/Série não encontrados!");
+import { ApiError } from "./ApiError.js";
+
+export function validateMedia(media) {
+  if (!media) throw new ApiError(404, "Filme/Série não encontrados!");
 }
 
 export function validateRating(rating) {
