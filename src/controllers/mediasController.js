@@ -5,22 +5,20 @@ import {
   rateMedia,
   getMediaFromTmdb,
   trendingFromTmdb,
+  FindOrCreateMedia,
 } from "../services/mediasServices.js";
 import { ApiError } from "../utils/ApiError.js";
 
 import { validateMedia, validateRating } from "../utils/validators.js";
 
 // ------ GETS -------
-
 export async function getTrending(req, res) {
   const { mediaType } = req;
   try {
     const medias = await trendingFromTmdb(mediaType);
     res.json(medias);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Erro ao buscar filmes", error: err.message });
+    next(err);
   }
 }
 
@@ -34,10 +32,8 @@ export async function searchingMedia(req, res) {
   try {
     const movies = await getMediaFromTmdb(q);
     res.status(200).json(movies);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Erro ao buscar filmes", error: err.message });
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -48,35 +44,32 @@ export function showFavorites(req, res) {
 }
 
 // GET by ID
-export async function findMediaById(req, res) {
+export async function findMediaById(req, res, next) {
   const { id } = req.params;
   const { mediaType } = req;
   try {
-    const media = await getMediaById(mediaType, id);
-
+    const media = await FindOrCreateMedia(mediaType, id);
     validateMedia(media);
-    res.json(media);
+    res.status(200).json(media);
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    next(err);
   }
 }
 
 // ------- PUT's -------
 // Put Toggle Favorite
-export async function toggleFavoriteController(req, res, next) {
+export async function toggleFavoriteController(req, res) {
   const { id } = req.params;
   const { mediaType } = req;
 
   if (!id || !mediaType) {
-    return next(new ApiError(400, "ID ou tipo não informados."));
+    throw new ApiError(400, "ID ou tipo não informados.");
   }
 
   try {
-    const media = await getMediaById(mediaType, id);
-
+    const media = await FindOrCreateMedia(id, mediaType);
     validateMedia(media);
-
-    const result = await toggleFavorite(req.user.id, media);
+    const result = await toggleFavorite(req.user.id, media.id);
 
     return res.status(201).json(result);
   } catch (err) {

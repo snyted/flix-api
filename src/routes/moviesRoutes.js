@@ -3,7 +3,7 @@ import { authenticate } from "../middlewares/authenticate.js";
 import { typingRoutes } from "../middlewares/typingRoutes.js";
 import { getTrending, findMediaById, toggleFavoriteController } from "../controllers/mediasController.js";
 
-const router = Router();
+export const router = Router();
 
 router.use(typingRoutes("movie"));
 

@@ -1,12 +1,12 @@
 import tmdbApi from "../config/tmdb.js";
 import { ApiError } from "../utils/ApiError.js";
-import pool from "../config/db.js";
 import { mapTmdbData } from "../utils/mapTmdb.js";
+import { findMediaOnDb, insertMediaSnapshot } from "../repository/mediaRepo.js";
 
-export async function getMediaById(type, id) {
+export async function getMediaById(id, type) {
   try {
-    const response = await tmdbApi.get(`/${type}/${id}`);
-    console.log(response)
+    const { data } = await tmdbApi.get(`/${type}/${id}`);
+    return mapTmdbData(data, type);
   } catch (error) {
     throw new ApiError(
       error.response?.status || 500,
@@ -18,8 +18,7 @@ export async function getMediaById(type, id) {
 export async function trendingFromTmdb(type) {
   try {
     const { data } = await tmdbApi.get(`/trending/${type}/week`);
-    const mapped = data.results.map((media) => mapTmdbData(media, type));
-    return mapped
+    return data.results.map((media) => mapTmdbData(media, type));
   } catch (err) {
     console.error("Erro ao buscar dados do TMDB:", err.message);
   }
@@ -46,19 +45,18 @@ export async function getMediaFromTmdb(name) {
   }
 }
 
-export async function FindOrCreateMedia(type, tmdbId) {
-  const media = await pool.query(
-    `SELECT * FROM media WHERE tmdb_id = $1 AND type = $2`,
-    [tmdbId, type]
-  );
+export async function FindOrCreateMedia(id, type) {
+  const existing = await findMediaOnDb(id, type);
 
-  if (media.rowCount > 0) {
-    return media.rows[0];
-  }
+  if (existing) return existing;
+  const tmdbRaw = await getMediaById(id, type);
+  if (!tmdbRaw) throw new ApiError(404, "Não encontrado na TMDB");
 
-  const rawData = await getMediaById(type, tmdbId);
+  const mapped = mapTmdbData(tmdbRaw, type);
 
-  const mapped = mapTmdbToMedia(rawData, type);
+  const saved = await insertMediaSnapshot(mapped);
+
+  return saved;
 }
 
 export function getAllFavorites() {}
