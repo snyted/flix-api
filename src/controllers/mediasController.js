@@ -49,7 +49,6 @@ export async function findMediaById(req, res, next) {
   try {
     const media = await FindOrCreateMedia(id, mediaType);
     validateMedia(media);
-    console.log(`MEDIA returned from service ${JSON.stringify(media)}`);
     res.status(200).json(media);
   } catch (err) {
     next(err);
@@ -58,20 +57,25 @@ export async function findMediaById(req, res, next) {
 
 // ------- PUT's -------
 // Put Toggle Favorite
-export async function toggleFavoriteController(req, res) {
-  const { id } = req.params;
+export async function toggleFavoriteController(req, res, next) {
+  const { id: mediaId } = req.params;
+  const { id: userId } = req.user;
   const { mediaType } = req;
 
-  if (!id || !mediaType) {
+  if (!mediaId || !mediaType) {
     throw new ApiError(400, "ID ou tipo não informados.");
   }
 
   try {
-    const media = await FindOrCreateMedia(id, mediaType);
-    validateMedia(media);
-    const result = await toggleFavorite(req.user.id, media.id);
-
-    return res.status(201).json(result);
+    const result = await toggleFavorite(userId, mediaId, mediaType);
+    return res
+      .status(result.favorited ? 201 : 200)
+      .json({
+        message: result.favorited
+          ? "Filme/Serie favoritado com sucesso!"
+          : "Filme/Serie removido dos favoritos",
+        ...result,
+      });
   } catch (err) {
     next(err);
   }

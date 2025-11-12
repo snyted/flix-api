@@ -28,9 +28,37 @@ export async function insertMediaSnapshot(media) {
     return result.rows[0];
   } catch (error) {
     if (error.code === "23505") {
-      console.log("Registro duplicado, ignorando...");
       return null;
     }
-    throw error; // outros erros
+    throw error; 
   }
+}
+
+export async function insertFavorite(userId, mediaId) {
+  const result = await pool.query(
+    `INSERT INTO favorites (user_id, media_id)
+     VALUES ($1, $2)
+     ON CONFLICT (user_id, media_id) DO NOTHING
+     RETURNING *`,
+    [userId, mediaId]
+  );
+  return result.rows[0] || null; 
+}
+
+
+export async function deleteFavorite(userId, mediaId) {
+  await pool.query(
+    `DELETE FROM favorites
+     WHERE user_id = $1 AND media_id = $2`,
+    [userId, mediaId]
+  );
+}
+
+export async function findFavorite(userId, mediaId) {
+  const result = await pool.query(
+    `SELECT * FROM favorites
+     WHERE user_id = $1 AND media_id = $2`,
+    [userId, mediaId]
+  );
+  return result.rows[0] || null;
 }

@@ -9,7 +9,7 @@ router.use(typingRoutes("movie"));
 
 router.get("/", getTrending);
 router.get("/:id", findMediaById);
-router.put('/:id/favorite', authenticate, toggleFavoriteController)
+router.post('/:id/favorite', authenticate, toggleFavoriteController)
 //
 
 // router.patch("/:id/rate", authenticate);

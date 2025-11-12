@@ -1,7 +1,13 @@
 import tmdbApi from "../config/tmdb.js";
 import { ApiError } from "../utils/ApiError.js";
 import { mapTmdbData } from "../utils/mapTmdb.js";
-import { findMediaOnDb, insertMediaSnapshot } from "../repository/mediaRepo.js";
+import {
+  deleteFavorite,
+  findFavorite,
+  findMediaOnDb,
+  insertFavorite,
+  insertMediaSnapshot,
+} from "../repository/mediaRepo.js";
 
 export async function getMediaByIdFromTmdb(id, type) {
   try {
@@ -57,8 +63,19 @@ export async function FindOrCreateMedia(id, type) {
 
 export function getAllFavorites() {}
 
-export async function toggleFavorite(id, media) {
-  const isFavorited = "";
+export async function toggleFavorite(userId, mediaId, type) {
+  const mediaIdNum = Number(mediaId);
+  const media = await FindOrCreateMedia(mediaIdNum, type);
+
+  const existing = await findFavorite(userId, media.id);
+
+  if (existing) {
+    await deleteFavorite(userId, media.id);
+    return { favorited: false, media };
+  }
+
+  const inserted = await insertFavorite(userId, media.id);
+  return { favorited: true, favorite: inserted, media };
 }
 
 export function rateMedia(movie, rating) {
