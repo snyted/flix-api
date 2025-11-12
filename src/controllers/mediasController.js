@@ -1,5 +1,4 @@
 import {
-  getMediaById,
   getAllFavorites,
   toggleFavorite,
   rateMedia,
@@ -48,8 +47,9 @@ export async function findMediaById(req, res, next) {
   const { id } = req.params;
   const { mediaType } = req;
   try {
-    const media = await FindOrCreateMedia(mediaType, id);
+    const media = await FindOrCreateMedia(id, mediaType);
     validateMedia(media);
+    console.log(`MEDIA returned from service ${JSON.stringify(media)}`);
     res.status(200).json(media);
   } catch (err) {
     next(err);

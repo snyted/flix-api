@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { mapTmdbData } from "../utils/mapTmdb.js";
 import { findMediaOnDb, insertMediaSnapshot } from "../repository/mediaRepo.js";
 
-export async function getMediaById(id, type) {
+export async function getMediaByIdFromTmdb(id, type) {
   try {
     const { data } = await tmdbApi.get(`/${type}/${id}`);
     return mapTmdbData(data, type);
@@ -47,15 +47,11 @@ export async function getMediaFromTmdb(name) {
 
 export async function FindOrCreateMedia(id, type) {
   const existing = await findMediaOnDb(id, type);
-
   if (existing) return existing;
-  const tmdbRaw = await getMediaById(id, type);
-  if (!tmdbRaw) throw new ApiError(404, "Não encontrado na TMDB");
 
-  const mapped = mapTmdbData(tmdbRaw, type);
-
-  const saved = await insertMediaSnapshot(mapped);
-
+  const tmdbMapped = await getMediaByIdFromTmdb(id, type);
+  const saved = await insertMediaSnapshot(tmdbMapped);
+  console.log(`SAVED: ${saved}`);
   return saved;
 }
 

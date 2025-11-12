@@ -8,19 +8,29 @@ export async function findMediaOnDb(id, type) {
   return result.rows[0] || null;
 }
 
-export async function insertMediaSnapshot({
-  tmdb_id,
-  type,
-  title,
-  poster_path,
-  overview,
-}) {
-  const result = await pool.query(
-    `INSERT INTO media (tmdb_id, type, title, poster_path, overview)
-     VALUES ($1, $2, $3, $4, $5)
+export async function insertMediaSnapshot(media) {
+  console.log(`Insert Media on TMDB: ${media}`)
+  try {
+    const result = await pool.query(
+      `INSERT INTO media (tmdb_id, title, type, overview, poster_path, backdrop_path)
+     VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING *`,
-    [tmdb_id, type, title, poster_path, overview]
-  );
+      [
+        media.tmdb_id,
+        media.title,
+        media.type,
+        media.overview,
+        media.poster_path,
+        media.backdrop_path,
+      ]
+    );
 
-  return result.rows[0];
+    return result.rows[0];
+  } catch (error) {
+    if (error.code === "23505") {
+      console.log("Registro duplicado, ignorando...");
+      return null;
+    }
+    throw error; // outros erros
+  }
 }
