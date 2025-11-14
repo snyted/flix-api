@@ -9,6 +9,11 @@ import {
   insertFavorite,
   insertMediaSnapshot,
 } from "../repository/mediaRepo.js";
+import {
+  findRateById,
+  updateRate,
+  insertRate,
+} from "../repository/ratingRepo.js";
 
 export async function getMediaByIdFromTmdb(id, type) {
   try {
@@ -33,22 +38,13 @@ export async function trendingFromTmdb(type) {
 
 export async function getMediaFromTmdb(name) {
   try {
-    const response = await tmdbApi.get("/search/multi", {
+    const { data } = await tmdbApi.get("/search/multi", {
       params: { query: name },
     });
-    return response.data.results.map((movie) => ({
-      id: movie.id,
-      title: movie.title || movie.name,
-      overview: movie.overview,
-      type: movie.media_type,
-      release: movie.release_date,
-    }));
-  } catch (error) {
-    console.error(
-      "Erro ao buscar filmes:",
-      error.response?.data || error.message
-    );
-    throw new Error("Erro ao buscar filmes");
+    console.log(data);
+    return data.results.map((media) => mapTmdbData(media, media.media_type));
+  } catch (err) {
+    throw new ApiError(err, "Erro ao buscar filmes");
   }
 }
 
@@ -64,8 +60,8 @@ export async function FindOrCreateMedia(id, type) {
 export async function getAllFavorites(userId) {
   const favorites = await getAllUserFavorites(userId);
 
-  if(!favorites) {
-    throw new ApiError(400, 'Usuário não favoritou nenhum livro ainda!')
+  if (!favorites) {
+    throw new ApiError(400, "Usuário não favoritou nenhum livro ainda!");
   }
   return favorites;
 }
@@ -73,7 +69,6 @@ export async function getAllFavorites(userId) {
 export async function toggleFavorite(userId, mediaId, type) {
   const mediaIdNum = Number(mediaId);
   const media = await FindOrCreateMedia(mediaIdNum, type);
-
   const existing = await findFavorite(userId, media.id);
 
   if (existing) {
@@ -85,7 +80,22 @@ export async function toggleFavorite(userId, mediaId, type) {
   return { favorited: true, favorite: inserted, media };
 }
 
-export function rateMedia(movie, rating) {
-  movie.rating = rating;
-  return movie;
+export async function updateOrAddRate(userId, mediaId, type, rating) {
+  const mediaIdNum = Number(mediaId);
+  const media = await FindOrCreateMedia(mediaIdNum, type);
+console.log(rating)
+  if (!media) {
+    throw new ApiError(401, "Filme/Serie não encontrado.");
+  }
+
+  const isRated = await findRateById(userId, media.id);
+
+  if (!isRated) {
+    const rateInserted = await insertRate(userId, media.id, rating);
+    return rateInserted;
+  }
+
+  const updRate = await updateRate(userId, media.id, rating);
+
+  return updRate;
 }

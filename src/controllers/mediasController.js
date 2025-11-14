@@ -1,7 +1,7 @@
 import {
   getAllFavorites,
   toggleFavorite,
-  rateMedia,
+  updateOrAddRate,
   getMediaFromTmdb,
   trendingFromTmdb,
   FindOrCreateMedia,
@@ -84,17 +84,21 @@ export async function toggleFavoriteController(req, res, next) {
 }
 
 // PUT  modify rate
-export function rateMediaController(req, res) {
-  const { id } = req.params;
+export async function postRating(req, res, next) {
+  const { id: mediaId } = req.params;
+  const { id: userId } = req.user;
   const { rating } = req.body;
+  const { mediaType } = req;
+
+  if(!rating) {
+    return res.send("Nota não fornecida.")
+  }
 
   try {
-    const media = findMediaById(id);
-    validateMedia(media);
-    validateRating(rating);
-    const updatedMovie = rateMedia(movie, rating);
-    res.json(updatedMovie);
+    const result = await updateOrAddRate(userId, mediaId, mediaType, rating);
+
+    return res.json({ message: "Nota adicionada com sucesso." });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    next(err);
   }
 }
