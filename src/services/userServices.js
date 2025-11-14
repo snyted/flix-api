@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { findUserByName, createUser } from "../repository/userRepo.js";
+import jwt from "jsonwebtoken";
 
 export async function register(user, password) {
   const foundUser = await findUserByName(user);
@@ -27,12 +28,9 @@ export async function login(username, password) {
     throw new ApiError(401, "Usuário ou senha incorretos.");
   }
 
-  const token = jwt.sign(
-    { id: user.id },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 
   return { token, username: user.name };
 }
-

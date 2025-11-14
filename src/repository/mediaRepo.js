@@ -9,7 +9,7 @@ export async function findMediaOnDb(id, type) {
 }
 
 export async function insertMediaSnapshot(media) {
-  console.log(`Insert Media on TMDB: ${media}`)
+  console.log(`Insert Media on TMDB: ${media}`);
   try {
     const result = await pool.query(
       `INSERT INTO media (tmdb_id, title, type, overview, poster_path, backdrop_path)
@@ -30,7 +30,7 @@ export async function insertMediaSnapshot(media) {
     if (error.code === "23505") {
       return null;
     }
-    throw error; 
+    throw error;
   }
 }
 
@@ -42,9 +42,8 @@ export async function insertFavorite(userId, mediaId) {
      RETURNING *`,
     [userId, mediaId]
   );
-  return result.rows[0] || null; 
+  return result.rows[0] || null;
 }
-
 
 export async function deleteFavorite(userId, mediaId) {
   await pool.query(
@@ -61,4 +60,23 @@ export async function findFavorite(userId, mediaId) {
     [userId, mediaId]
   );
   return result.rows[0] || null;
+}
+
+export async function getAllUserFavorites(userId) {
+  const result = await pool.query(
+    `SELECT 
+  f.id as favorite_id,
+  m.tmdb_id,
+  m.title,
+  m.overview,
+  m.poster_path,
+  m.backdrop_path,
+  m.type
+FROM favorites f
+JOIN media m ON f.media_id = m.id
+WHERE f.user_id = $1`,
+    [userId]
+  );
+
+  return result.rows || null;
 }

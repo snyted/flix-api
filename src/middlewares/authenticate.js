@@ -1,6 +1,6 @@
-
 import dotenv from "dotenv";
-dotenv.config()
+import jwt from "jsonwebtoken";
+dotenv.config();
 export function authenticate(req, res, next) {
   const { authorization } = req.headers;
   if (!authorization) {

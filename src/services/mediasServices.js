@@ -5,6 +5,7 @@ import {
   deleteFavorite,
   findFavorite,
   findMediaOnDb,
+  getAllUserFavorites,
   insertFavorite,
   insertMediaSnapshot,
 } from "../repository/mediaRepo.js";
@@ -57,11 +58,17 @@ export async function FindOrCreateMedia(id, type) {
 
   const tmdbMapped = await getMediaByIdFromTmdb(id, type);
   const saved = await insertMediaSnapshot(tmdbMapped);
-  console.log(`SAVED: ${saved}`);
   return saved;
 }
 
-export function getAllFavorites() {}
+export async function getAllFavorites(userId) {
+  const favorites = await getAllUserFavorites(userId);
+
+  if(!favorites) {
+    throw new ApiError(400, 'Usuário não favoritou nenhum livro ainda!')
+  }
+  return favorites;
+}
 
 export async function toggleFavorite(userId, mediaId, type) {
   const mediaIdNum = Number(mediaId);

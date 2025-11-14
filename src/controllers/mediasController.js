@@ -36,10 +36,14 @@ export async function searchingMedia(req, res) {
   }
 }
 
-export function showFavorites(req, res) {
-  const favorites = getAllFavorites();
-  // ARRUMAR ESSA FUNC DPS
-  res.json(favorites);
+export async function showFavorites(req, res, next) {
+  const { id } = req.user;
+  try {
+    const favorites = await getAllFavorites(id);
+    res.json(favorites);
+  } catch (err) {
+    next(err);
+  }
 }
 
 // GET by ID
@@ -68,14 +72,12 @@ export async function toggleFavoriteController(req, res, next) {
 
   try {
     const result = await toggleFavorite(userId, mediaId, mediaType);
-    return res
-      .status(result.favorited ? 201 : 200)
-      .json({
-        message: result.favorited
-          ? "Filme/Serie favoritado com sucesso!"
-          : "Filme/Serie removido dos favoritos",
-        ...result,
-      });
+    return res.status(result.favorited ? 201 : 200).json({
+      message: result.favorited
+        ? "Filme/Serie favoritado com sucesso!"
+        : "Filme/Serie removido dos favoritos",
+      ...result,
+    });
   } catch (err) {
     next(err);
   }
