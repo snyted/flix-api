@@ -1,47 +1,28 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import pool from "../config/db.js";
-import { getUserByNameService } from "../services/userServices.js";
+import { register, login } from "../services/userServices.js";
 
-export async function registerController(req, res) {
+export async function registerController(req, res, next) {
   const { user, password } = req.body;
-
   try {
-    const foundUser = await getUserByNameService(user);
-    if (foundUser) {
-      return res.status(400).json({ message: `Usuário ${user} já existe.` });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    await register(user, password);
 
-    await pool.query("INSERT INTO users (name, password) VALUES ($1, $2)", [
-      user,
-      hashedPassword,
-    ]);
-
-    res.status(201).send({ user, message: "Cadastro efetuado com sucesso!" });
+    res.status(201).json({ message: "Cadastro efetuado com sucesso!" });
   } catch (err) {
-    console.error("Erro ao cadastrar usuário:", err);
-    res.status(500).send({ message: "Erro no servidor" });
+    next(err);
   }
 }
 
-export async function loginController(req, res) {
+export async function loginController(req, res, next) {
   const { user, password } = req.body;
 
   try {
-    const foundUser = await getUserByNameService(user);
+    const { token, username } = await login(user, password);
 
-    if (!foundUser || !(await bcrypt.compare(password, foundUser.password))) {
-      return res.status(401).json({ message: "Usuário ou senha incorretos" });
-    }
-
-    const token = jwt.sign({ id: foundUser.id }, "minhaChaveTemporaria", {
-      expiresIn: "1h",
+    return res.status(200).json({
+      message: "Login efetuado com sucesso!",
+      token,
+      user: username,
     });
-
-    res.status(200).json({ message: "Login efetuado!", token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Erro no servidor" });
+  } catch (err) {
+    next(err);
   }
 }
