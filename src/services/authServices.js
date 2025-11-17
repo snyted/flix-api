@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { findUserByName, createUser } from "../repository/userRepo.js";
 import jwt from "jsonwebtoken";
+import { ApiError } from "../utils/ApiError.js";
 
 export async function register(user, password) {
   const foundUser = await findUserByName(user);
