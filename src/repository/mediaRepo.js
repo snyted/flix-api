@@ -62,21 +62,16 @@ export async function findFavorite(userId, mediaId) {
   return result.rows[0] || null;
 }
 
-export async function getAllUserFavorites(userId) {
+export async function findAllUserFavorites(userId) {
   const result = await pool.query(
     `SELECT 
   f.id as favorite_id,
-  m.tmdb_id,
-  m.title,
-  m.overview,
-  m.poster_path,
-  m.backdrop_path,
-  m.type
+  m.*
 FROM favorites f
 JOIN media m ON f.media_id = m.id
 WHERE f.user_id = $1`,
     [userId]
   );
 
-  return result.rows || null;
+  return result.rows;
 }
