@@ -24,3 +24,4 @@ export async function createUser(name, hashedPassword) {
     throw err;
   }
 }
+

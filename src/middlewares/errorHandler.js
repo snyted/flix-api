@@ -1,7 +1,7 @@
 export function errorHandler(err, req, res, next) {
-  console.error("🔥 Erro capturado:", err);
+  console.error("Erro:", err);
 
-  const status = err.statusCode || 500;
+  const status = err.status || 500;
   const message =
     err.message || "Erro interno no servidor. Tente novamente mais tarde.";
 

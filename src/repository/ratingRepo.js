@@ -1,11 +1,25 @@
 import pool from "../config/db.js";
 
+export async function findAllUserRates(userId) {
+  const result = await pool.query(
+    `SELECT 
+  rating,
+  m.*
+FROM ratings
+JOIN media m ON ratings.media_id = m.id
+WHERE ratings.user_id = $1`,
+    [userId]
+  );
+
+  return result.rows;
+}
+
 export async function findRateById(userId, id) {
   const result = await pool.query(
     `SELECT * FROM ratings WHERE user_id = $1 AND media_id = $2`,
     [userId, id]
   );
-  return result.rows[0] || null;
+  return result.rows[0];
 }
 
 export async function insertRate(userId, id, rating) {
