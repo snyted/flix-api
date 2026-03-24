@@ -1,6 +1,4 @@
 import axios from "axios";
-import dotenv from "dotenv";
-dotenv.config();
 
 const tmdbApi = axios.create({
   baseURL: "https://api.themoviedb.org/3",
@@ -8,9 +6,10 @@ const tmdbApi = axios.create({
     language: "pt-BR",
   },
   headers: {
-    Authorization: `Bearer ${process.env.TMDB_ACESS_TOKEN}`,
+    Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
     "Content-Type": "application/json",
   },
 });
+console.log("Token do TMDB...:", process.env.TMDB_ACCESS_TOKEN);
 
 export default tmdbApi;
