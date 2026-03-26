@@ -1,4 +1,6 @@
-export function mapTmdbData(raw, type) {
+import { MediaMapped } from "../interfaces/Media";
+
+export function mapTmdbData(raw: any, type: 'movie' | 'serie'): MediaMapped {
   return {
     tmdb_id: raw.id,
     title: raw.title || raw.name,

@@ -1,4 +1,7 @@
-export function mapPgData(raw) {
+import { MediaMapped } from "../interfaces/Media";
+
+
+export function mapPgData(raw: any): MediaMapped {
   return {
     tmdb_id: raw.id,
     title: raw.title,
