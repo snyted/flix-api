@@ -1,6 +1,8 @@
 import tmdbApi from "../config/tmdb.js";
 import { ApiError } from "../utils/ApiError.js";
-import { mapTmdbData } from "../utils/mapTmdb.js";
+import { mapTmdbData } from "../utils/mapTmdb.ts";
+import { mapPgData } from "../utils/mapPgData.ts";
+
 import {
   deleteFavorite,
   findFavorite,
@@ -21,7 +23,7 @@ import {
   updateContent,
   insertContent,
 } from "../repository/reviewsRepo.js";
-import { mapPgData } from "../utils/mapPgData.js";
+
 
 export async function getMediaByIdFromTmdb(id, type) {
   try {

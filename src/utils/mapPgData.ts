@@ -1,5 +1,6 @@
-import { MediaMapped } from "../interfaces/Media";
+import { MediaMapped, TEST } from "../interfaces/Media.js";
 
+console.log(TEST);
 
 export function mapPgData(raw: any): MediaMapped {
   return {

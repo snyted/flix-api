@@ -19,3 +19,5 @@ export interface MediaMapped {
   review?: string | null;
   favorited?: "Sim" | "Não";
 }
+
+export const TEST = "TEST";

@@ -1,4 +1,4 @@
-import { MediaMapped } from "../interfaces/Media";
+import { MediaMapped } from "../interfaces/Media.js";
 
 export function mapTmdbData(raw: any, type: 'movie' | 'serie'): MediaMapped {
   return {
