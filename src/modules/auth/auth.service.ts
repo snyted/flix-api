@@ -35,25 +35,22 @@ export class AuthService {
     const dbUser = await this.userRepository.find(data.username)
 
     if (!dbUser) {
-      throw new AppError(401, "Usuário ou senha incorretos.");
+      throw new AppError(401, "User or Password incorrect.");
     }
 
     const match = await bcrypt.compare(data.password, dbUser.password);
 
     if (!match) {
-      throw new AppError(401, "Usuário ou senha incorretos.");
+      throw new AppError(401, "User or Password incorrect.");
     }
 
     const jwtSecret = process.env.JWT_SECRET
 
     if (!jwtSecret) {
-      throw new Error("JWT_SECRET não está definido.");
+      throw new Error("JWT_SECRET is not set in the environment variables.");
     }
 
-    const token = jwt.sign({ id: dbUser.id, username: dbUser.username }, jwtSecret, {
-      expiresIn: "1h",
-
-    });
+    const token = jwt.sign({ sub: dbUser.id.toString() }, jwtSecret, { algorithm: "HS256", expiresIn: "1h", });
 
     return { token, username: dbUser.username };
   }
